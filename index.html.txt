@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>CareerPath AI</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+body{
+    font-family: 'Segoe UI', sans-serif;
+    margin:0;
+    background: linear-gradient(135deg,#667eea,#764ba2);
+    color:white;
+    text-align:center;
+}
+.container{
+    background:white;
+    color:black;
+    width:90%;
+    max-width:600px;
+    margin:30px auto;
+    padding:25px;
+    border-radius:15px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.3);
+}
+input,button{
+    padding:10px;
+    margin:5px;
+    width:80%;
+    border-radius:8px;
+    border:1px solid #ccc;
+}
+button{
+    background:#667eea;
+    color:white;
+    border:none;
+    cursor:pointer;
+}
+button:hover{
+    background:#5a67d8;
+}
+.hidden{display:none;}
+h1{margin-top:20px;}
+</style>
+</head>
+
+<body>
+
+<h1>🎓 CareerPath AI</h1>
+<p>Smart Jurusan Advisor Kelas 10 → 11</p>
+
+<div class="container" id="loginPage">
+    <h3>Login Siswa</h3>
+    <input type="text" id="nama" placeholder="Masukkan Nama"><br>
+    <button onclick="login()">Masuk</button>
+</div>
+
+<div class="container hidden" id="testPage">
+    <h3>Tes Penjurusan</h3>
+    <input type="number" id="mtk" placeholder="Nilai Matematika"><br>
+    <input type="number" id="ipa" placeholder="Nilai IPA"><br>
+    <input type="number" id="ips" placeholder="Nilai IPS"><br>
+    <input type="number" id="bhs" placeholder="Nilai Bahasa"><br><br>
+
+    <b>Minat Kamu:</b><br>
+    <input type="radio" name="minat" value="IPA"> Sains & Teknologi<br>
+    <input type="radio" name="minat" value="IPS"> Sosial & Ekonomi<br>
+    <input type="radio" name="minat" value="Bahasa"> Bahasa & Seni<br><br>
+
+    <button onclick="analisis()">Analisis Sekarang</button>
+
+    <canvas id="chart" class="hidden"></canvas>
+    <div id="hasil"></div>
+</div>
+
+<script>
+function login(){
+    let nama=document.getElementById("nama").value;
+    if(nama==""){
+        alert("Masukkan nama dulu!");
+        return;
+    }
+    document.getElementById("loginPage").classList.add("hidden");
+    document.getElementById("testPage").classList.remove("hidden");
+}
+
+function analisis(){
+    let mtk=parseInt(document.getElementById("mtk").value);
+    let ipa=parseInt(document.getElementById("ipa").value);
+    let ips=parseInt(document.getElementById("ips").value);
+    let bhs=parseInt(document.getElementById("bhs").value);
+    let minat=document.querySelector('input[name="minat"]:checked');
+
+    if(!mtk||!ipa||!ips||!bhs||!minat){
+        alert("Lengkapi semua data!");
+        return;
+    }
+
+    let ipaScore=(mtk+ipa)/2;
+    let ipsScore=(ips+bhs)/2;
+
+    let rekomendasi="";
+    let penjelasan="";
+
+    if(ipaScore>ipsScore && minat.value=="IPA"){
+        rekomendasi="Jurusan IPA";
+        penjelasan="Nilai Matematika dan IPA kamu kuat serta minat di bidang sains. Kamu cocok di jurusan IPA.";
+    }
+    else if(ipsScore>ipaScore && minat.value=="IPS"){
+        rekomendasi="Jurusan IPS";
+        penjelasan="Kekuatan kamu ada di bidang sosial dan bahasa. Jurusan IPS lebih sesuai.";
+    }
+    else{
+        rekomendasi="Jurusan Bahasa / Konsultasi BK";
+        penjelasan="Nilai dan minat kamu cukup seimbang. Disarankan konsultasi dengan guru BK untuk keputusan terbaik.";
+    }
+
+    document.getElementById("hasil").innerHTML=
+    "<h3>🎯 Rekomendasi: "+rekomendasi+"</h3><p>"+penjelasan+"</p>";
+
+    tampilChart(mtk,ipa,ips,bhs);
+}
+
+function tampilChart(mtk,ipa,ips,bhs){
+    document.getElementById("chart").classList.remove("hidden");
+
+    new Chart(document.getElementById("chart"),{
+        type:'bar',
+        data:{
+            labels:['Matematika','IPA','IPS','Bahasa'],
+            datasets:[{
+                label:'Nilai Kamu',
+                data:[mtk,ipa,ips,bhs]
+            }]
+        }
+    });
+}
+</script>
+
+</body>
+</html>
